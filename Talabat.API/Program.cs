@@ -1,12 +1,15 @@
 using Microsoft.EntityFrameworkCore;
 using Talabat.Repository.Data;
 
+
+// Data Seeding : intial data [Once per server] 
 namespace Talabat.API
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
+
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
@@ -23,6 +26,25 @@ namespace Talabat.API
 
             var app = builder.Build();
 
+            using var scope = app.Services.CreateScope();
+
+            var services = scope.ServiceProvider;
+
+            var _dbContext = services.GetRequiredService<StoreContext>(); // Ask CLR to Create object from StoreContext
+
+            var loggerFactory = services.GetRequiredService<ILoggerFactory>();
+            try
+            {
+                await _dbContext.Database.MigrateAsync();
+                await StoreContextSeed.SeedAsync(_dbContext);
+            }
+            catch (Exception ex)
+            {
+                var logger = loggerFactory.CreateLogger<Program>();
+                logger.LogError(ex, "An Error Has Accoured During Apply Migration");
+            }
+
+
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
@@ -35,8 +57,9 @@ namespace Talabat.API
 
             app.UseAuthorization();
 
-
             app.MapControllers();
+
+
 
             app.Run();
         }
