@@ -47,6 +47,23 @@ namespace Talabat.Repository.Data
                     await _dbContext.SaveChangesAsync();
                 }
             }
+
+            if (_dbContext.Products.Count() == 0)
+            {
+                var ProductsData = File.ReadAllText("../Talabat.Repository/Data/DataSeed/products.json");
+                var Products = JsonSerializer.Deserialize<List<Product>>(ProductsData);
+
+
+                if (Products?.Count > 0)
+                {
+                    foreach (var product in Products)
+                    {
+                        _dbContext.Set<Product>().Add(product);
+                    }
+
+                    await _dbContext.SaveChangesAsync();
+                }
+            }
         } 
     }
 }
