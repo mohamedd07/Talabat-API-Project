@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Talabat.API.Errors;
+using Talabat.API.Extenssions;
 using Talabat.API.Helpers;
 using Talabat.API.MiddleWares;
 using Talabat.Core.Entities;
@@ -11,7 +12,7 @@ using Talabat.Repository.Data;
 
 // Data Seeding : intial data [Once per server] 
 namespace Talabat.API
-{ // TESTt
+{
     public class Program
     {
         public static async Task Main(string[] args)
@@ -22,32 +23,15 @@ namespace Talabat.API
             // Add services to the container.
 
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+
+            builder.Services.AddSwaggerServices();
 
             builder.Services.AddDbContext<StoreContext>(options =>
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefultConnection"));
             });
 
-            builder.Services.AddScoped(typeof(IGenericRepository<>),typeof(GenericRepository<>));
-
-            //builder.Services.AddAutoMapper(M => M.AddProfile(new MappingProfiles()));
-            builder.Services.AddAutoMapper(typeof(MappingProfiles));
-
-            builder.Services.Configure<ApiBehaviorOptions>(options =>
-            {
-                options.InvalidModelStateResponseFactory = (actionContext) =>
-                {
-                    var errors = actionContext.ModelState.Where(P => P.Value.Errors.Count() > 0).SelectMany(P => P.Value.Errors).Select(P => P.ErrorMessage).ToArray();
-                    var response = new ApiValidationErrorResponse()
-                    {
-                        Errors = errors
-                    };
-                    return new BadRequestObjectResult(response);
-                };
-            });
+            builder.Services.AddApplicationServices();
 
             var app = builder.Build();
 
@@ -77,7 +61,6 @@ namespace Talabat.API
             {
                 // To Document the all APIs as UI with all details to make end-user(Front-End Dev) to consume api
                 app.UseSwagger();
-                app.UseSwaggerUI();
             }
 
             app.UseStatusCodePagesWithReExecute("/errors/{0}");
