@@ -8,7 +8,7 @@ using Talabat.Repository.Data;
 
 // Data Seeding : intial data [Once per server] 
 namespace Talabat.API
-{ // TEST
+{ // TESTt
     public class Program
     {
         public static async Task Main(string[] args)
