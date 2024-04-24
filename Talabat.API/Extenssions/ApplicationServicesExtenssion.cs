@@ -10,6 +10,7 @@ namespace Talabat.API.Extenssions
     {
         public static IServiceCollection AddApplicationServices(this IServiceCollection services)
         {
+            services.AddScoped(typeof(IBasketRepository), typeof(BasketRepository));
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
             //builder.Services.AddAutoMapper(M => M.AddProfile(new MappingProfiles()));
