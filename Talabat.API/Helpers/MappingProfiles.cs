@@ -15,6 +15,11 @@ namespace Talabat.API.Helpers
                 .ForMember(d => d.Category, o => o.MapFrom(s => s.Category.Name))
                 //.ForMember(P => P.PictureUrl, o => o.MapFrom(S => $"/{S.PictureUrl}"));
                 .ForMember(P => P.PictureUrl, o => o.MapFrom<ProductPictureUrlResolver>());
+
+            CreateMap<CustomerBasketDto, CustomerBasket>();
+            CreateMap<BasketItemDto, BasketItem>();
+        
+        
         }
     }
 }
